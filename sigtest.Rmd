@@ -1,0 +1,43 @@
+---
+title: "Wine Significance Testing"
+author: "Samantha Simpson"
+date: '2021-12-6'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Testing features of two wine quality datasets for their significance for use in data analysis
+
+First, linear models were created for both the red and white datasets that used every feature possible to predict wine quality. 
+
+For the red dataset, it was found that the only variables that were significant to the linear model were volatile acidity, chlorides, total sulfur dioxide, pH, sulphates, and alcohol content. Variance inflation factor was calculated and it was determined that these variables are not overly multicollinear. 
+
+For the white dataset, it was found that the variables that were significant to the linear model were fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density, pH, sulphates, and alcohol content. However, when variance inflation factor was calculated, it was determined that density and residual sugar had high values and thus may be collinear with each other. Density was removed from the model because it had a higher value of VIF. After density was removed, pH no longer appeared to be a significant variable either. So the resulting model for the white wine dataset uses fixed acidity, volatile acidity, residual sugar, free sulfur dioxide, pH, sulphates, and alcohol content to predict quality. 
+
+``` {r }
+library(car)
+red <- read.csv("./winequality-red.csv")
+white <- read.csv("./winequality-white.csv")
+
+red1 <- lm(quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + 
+    total.sulfur.dioxide + density + pH + sulphates + alcohol, data = red)
+summary(red1)
+white1 <- lm(quality ~ fixed.acidity + volatile.acidity + citric.acid + residual.sugar + chlorides + free.sulfur.dioxide + 
+    total.sulfur.dioxide + density + pH + sulphates + alcohol, data = white)
+summary(white1)
+
+red2 <- lm(quality ~ volatile.acidity + chlorides + total.sulfur.dioxide + pH + sulphates + alcohol, data = red)
+summary(red2)
+vif(red2)
+
+white2 <- lm(quality ~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol, data=white)
+summary(white2)
+vif(white2)
+
+white3 <- lm(quality ~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide+ pH + sulphates + alcohol, data=white)
+summary(white3)
+vif(white3)
+```
